@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eurocopa 2024</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href='/stylesheets/style.css'>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Eurocopa 2024</h1>
+    <button type="button" class="btn btn-primary mt-3 mr-2" data-toggle="modal" data-target="#agregarPartidoModal">
+        Agregar Partido
+    </button>
+    <div class="d-flex align-items-center">
+        <div class="input-group mt-3 mr-2">
+            <input type="text" id="equipoBusca" class="form-control" placeholder="Buscar partidos por ID de equipo:">
+            <div class="input-group-append">
+                <button id="buscarPartidos" class="btn btn-primary">Buscar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="partidos-list">
+    </div>
+
+    <h2 class="mt-3">Lista de Equipos</h2>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Pais</th>
+            <th>Grupo</th>
+            <th>Entrenador</th>
+            <th>Diferencia de Gol</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody id="equipos-list">
+        </tbody>
+    </table>
+</div>
+<div class="modal fade" id="agregarPartidoModal" tabindex="-1" role="dialog"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAgregarPartido">Agregar Partido</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="partidoForm">
+                    <div class="form-group">
+                        <label for="grupo">Grupo del Partido</label>
+                        <select class="form-control" id="grupo" name="grupo" required>
+                            <option value="Grupo A">Grupo A</option>
+                            <option value="Grupo B">Grupo B</option>
+                            <option value="Grupo C">Grupo C</option>
+                            <option value="Grupo D">Grupo D</option>
+                            <option value="Grupo E">Grupo E</option>
+                            <option value="Grupo F">Grupo F</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipoLocal">Equipo Local</label>
+                        <select class="form-control" id="equipoLocal" name="equipoLocal" required>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipoVisitante">Equipo Visitante</label>
+                        <select class="form-control" id="equipoVisitante" name="equipoVisitante" required>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="golesLocal">Goles del Equipo Local</label>
+                        <input type="number" class="form-control" id="golesLocal" name="golesLocal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="golesVisitante">Goles del Equipo Visitante</label>
+                        <input type="number" class="form-control" id="golesVisitante" name="golesVisitante" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" id="guardarPartido" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="agregarEquipoModal" tabindex="-1" role="dialog"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAgregarEquipo">Agregar Equipo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="equipoForm">
+                    <input type="hidden" id="equipoId" name="id">
+                    <div class="form-group">
+                        <label for="nombre">Pais</label>
+                        <input type="text" class="form-control" id="nombre" name="pais" autocomplete="off" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pais">Grupo del Equipo</label>
+                        <input type="text" class="form-control" id="pais" name="grupo" autocomplete="off" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="entrenador">Entrenador</label>
+                        <input type="text" class="form-control" id="entrenador" name="entrenador" autocomplete="off" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" id="guardarEquipo" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function abrirEditarModal(id, nombre, pais, entrenador) {
+        document.getElementById('equipoId').value = id;
+        document.getElementById('nombre').value = nombre;
+        document.getElementById('pais').value = pais;
+        document.getElementById('entrenador').value = entrenador;
+        $('#agregarEquipoModal').modal('show');
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarListaEquipos();
+        function cargarListaEquipos() {
+            fetch('/leerEquipos')
+                .then(response => response.json())
+                .then(data => {
+                    const equiposList = document.getElementById('equipos-list');
+                    equiposList.innerHTML = '';
+                    data.forEach(equipo => {
+                        const diferenciaGoles = equipo.goles_marcados - equipo.goles_recibidos;
+                        equiposList.innerHTML += `
+                    <tr>
+                        <td>${equipo.id}</td>
+                        <td>${equipo.pais}</td>
+                        <td>${equipo.grupo}</td>
+                        <td>${equipo.entrenador}</td>
+                        <td>${diferenciaGoles}</td>
+                        <td>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="abrirEditarModal(${equipo.id}, '${equipo.pais}', '${equipo.grupo}', '${equipo.entrenador}')">Editar</button>
+                            <form action="/eliminarEquipo" method="POST" class="d-inline">
+                                <input type="hidden" name="id" value="${equipo.id}">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                `;
+                    });
+                })
+                .catch(error => console.error(error));
+        }
+
+        function equiposGrupo(grupo, id) {
+            fetch(`/leerEquiposPorGrupo/${grupo}`)
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById(id);
+                    select.innerHTML = '';
+                    data.forEach(equipo => {
+                        select.innerHTML += `<option value="${equipo.id}">${equipo.pais}</option>`;
+                    });
+                });
+        }
+
+        $('#agregarPartidoModal').on('shown.bs.modal', function () {
+            const grupo = document.getElementById('grupo').value;
+            equiposGrupo(grupo, 'equipoLocal');
+            equiposGrupo(grupo, 'equipoVisitante');
+        });
+
+        document.getElementById('grupo').addEventListener('change', event => {
+            const grupo = event.target.value;
+            equiposGrupo(grupo, 'equipoLocal');
+            equiposGrupo(grupo, 'equipoVisitante');
+        });
+
+        document.getElementById('equipoBusca').addEventListener('input', function() {
+            const equipoBusca = this.value.trim();
+            const partidosList = document.getElementById('partidos-list');
+
+            if (equipoBusca === '') {
+                partidosList.innerHTML = '';
+            }
+        });
+
+
+        document.getElementById('buscarPartidos').addEventListener('click', () => {
+            const equipoId = document.getElementById('equipoBusca').value;
+            if (!equipoId) {
+                alert('Por favor ingrese un ID de equipo válido.');
+                return;
+            }
+
+            document.getElementById('partidos-list').innerHTML = '';
+            fetch(`/leerPartidosPorEquipo/${equipoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const partidosList = document.getElementById('partidos-list');
+                    partidosList.innerHTML = '';
+
+                    data.forEach(partido => {
+                        const matchContent = `
+                <div class="contenido">
+                    <div class="columna">
+                        <div class="equipo team--home">
+                            <div class="logo-equipo">
+                                <img src="${partido.equipo_local_logo}">
+                            </div>
+                            <h2 class="nombre-equipo">${partido.equipo_local}</h2>
+                        </div>
+                    </div>
+                    <div class="columna">
+                        <div class="detalles">
+                            <div class="resultado">
+                                <span class="numero numero">${partido.goles_local}</span>
+                                <span class="divisor">:</span>
+                                <span class="numero">${partido.goles_visitante}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="columna">
+                        <div class="equipo equipo--visita">
+                            <div class="logo-equipo">
+                                <img src="${partido.equipo_visitante_logo}">
+                            </div>
+                            <h2 class="nombre-equipo">${partido.equipo_visitante}</h2>
+                        </div>
+                    </div>
+                </div>
+            `;
+                        partidosList.innerHTML += matchContent;
+                    });
+
+                    if (data.length === 0) {
+                        alert('No se encontraron partidos para el ID de equipo especificado.');
+                    }
+                })
+                .catch(error => console.error(error));
+        });
+
+
+        document.getElementById('guardarPartido').addEventListener('click', (event) => {
+            event.preventDefault();
+
+            const partidoForm = document.getElementById('partidoForm');
+            const formData = {
+                grupo: partidoForm.querySelector('#grupo').value,
+                equipoLocal: partidoForm.querySelector('#equipoLocal').value,
+                equipoVisitante: partidoForm.querySelector('#equipoVisitante').value,
+                golesLocal: partidoForm.querySelector('#golesLocal').value,
+                golesVisitante: partidoForm.querySelector('#golesVisitante').value
+            };
+            console.log(formData);
+            fetch('/crearPartido', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        $('#agregarPartidoModal').modal('hide');
+                        partidoForm.reset();
+                        cargarListaEquipos();
+                    } else {
+                        throw new Error('Error al crear el partido');
+                    }
+                })
+                .catch(error => console.error(error));
+        });
+
+        document.getElementById('guardarEquipo').addEventListener('click', () => {
+            event.preventDefault();
+            const id = document.getElementById('equipoId').value;
+            const pais = document.getElementById('nombre').value;
+            const grupo = document.getElementById('pais').value;
+            const entrenador = document.getElementById('entrenador').value;
+
+            const formData = {
+                id: id,
+                pais: pais,
+                grupo: grupo,
+                entrenador: entrenador
+            };
+
+            fetch('/actualizarEquipo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        $('#agregarEquipoModal').modal('hide');
+                        cargarListaEquipos();
+                    } else {
+                        throw new Error('Error al actualizar el equipo');
+                    }
+                })
+                .catch(error => console.error(error));
+        });
+    });
+</script>
+</body>
+</html>
